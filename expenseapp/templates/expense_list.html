@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense List</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c; /* Black background */
+            background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'); /* Small print background */
+            color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #ff4c4c; /* Red text */
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #444;
+        }
+        th {
+            background-color: #333;
+        }
+        .chart-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        canvas {
+            background-color: #333;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Saved Expenses</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in expenses %}
+            <tr>
+                <td>{{ expense.get_category_display }}</td>
+                <td>{{ expense.description }}</td>
+                <td>{{ expense.amount }}</td>
+                <td>{{ expense.date }}</td>
+            </tr>
+            {% endfor %}
+            <p>Add more  <a href="{% url 'add_expense' %}">Add</a></p>
+            <p>Home  <a href="{% url 'home' %}">Dashboard</a></p>
+        </tbody>
+    </table>
+
+    <!-- Pie Chart Section -->
+    <div class="chart-container">
+        <canvas id="expensePieChart"></canvas>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('expensePieChart').getContext('2d');
+
+        // Data preparation for the pie chart
+        const categories = {{ categories|safe }};
+        const totals = {{ totals|safe }};
+
+        const data = {
+            labels: categories,
+            datasets: [{
+                label: 'Total Expenses by Category',
+                data: totals,
+                backgroundColor: [
+                    '#ff4c4c',
+                    '#ff8c4c',
+                    '#ffcf4c',
+                    '#4cff4c',
+                    '#4c8cff',
+                    '#cf4cff',
+                ],
+                borderColor: '#000',
+                borderWidth: 2,
+                hoverOffset: 10 // Lift effect on hover
+            }]
+        };
+
+        const config = {
+            type: 'pie',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Expense Distribution by Category'
+                    }
+                }
+            },
+        };
+
+        const expensePieChart = new Chart(ctx, config);
+    </script>
+   
+</body>
+</html>

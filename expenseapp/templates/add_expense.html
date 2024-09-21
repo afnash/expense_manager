@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Expense</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c; /* Black background */
+            background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'); /* Small print background */
+            color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* Full viewport height */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        h2 {
+            color: #ff4c4c; /* Red text for header */
+            margin-bottom: 15px; /* Slightly smaller gap under heading */
+            text-align: center;
+        }
+        form {
+            background-color: #333;
+            padding: 25px; /* Reduced padding to decrease length */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 550px; /* Width slightly decreased */
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            color: #f2f2f2;
+            margin-bottom: 5px;
+        }
+        input, textarea, select {
+            padding: 10px; /* Reduced padding to compact the form fields */
+            margin-bottom: 12px; /* Less margin to make the form shorter */
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #262626;
+            color: #f2f2f2;
+            font-size: 14px;
+            width: 100%;
+        }
+        button {
+            background-color: #ff4c4c;
+            color: white;
+            border: none;
+            padding: 10px; /* Reduced padding for button */
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #e63939; /* Darker red on hover */
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+        }
+        a {
+            color: #ff4c4c;
+            text-decoration: none;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Add a New Expense</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">Add Expense</button>
+        </form>
+
+        <!-- View Saved Expenses link below the form -->
+        <a href="{% url 'expense_list' %}">View Saved Expenses</a>
+        <a href="{% url 'home' %}">Dashboard</a>
+
+    </div>
+
+</body>
+</html>
