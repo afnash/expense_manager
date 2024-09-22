@@ -4,47 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense List</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #1c1c1c; /* Black background */
-            background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'); /* Small print background */
-            color: #f2f2f2;
+            font-family: 'Poppins', sans-serif;
+            background-color: #013220; /* Dark Green */
             margin: 0;
-            padding: 0;
+            padding: 20px;
         }
+
+        .container {
+            background-color: #004c4c; /* Peacock Blue */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
         h1 {
+            color: #fff;
             text-align: center;
-            color: #ff4c4c; /* Red text */
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            font-weight: 600;
         }
+
         table {
-            width: 80%;
-            margin: 20px auto;
+            width: 100%;
             border-collapse: collapse;
+            background-color: #0a504d;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
         }
+
         th, td {
-            padding: 10px;
-            text-align: left;
-            border: 1px solid #444;
+            padding: 15px;
+            text-align: center;
+            color: white;
         }
-        th {
-            background-color: #333;
+
+        thead {
+            background-color: #007777; /* Darker Peacock */
         }
-        .chart-container {
-            width: 80%;
-            margin: 20px auto;
+
+        tbody tr:nth-child(even) {
+            background-color: #005555;
         }
-        canvas {
-            background-color: #333;
-            border-radius: 8px;
+
+        tbody tr:hover {
+            background-color: #017575; /* Lighter Peacock on hover */
         }
+
+        .summary {
+            background-color: #002e2e; /* Dark Green */
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .summary div {
+            font-size: 1.3em;
+        }
+
+        .pie-chart {
+            margin-top: 20px;
+            text-align: center; /* Align center */
+        }
+
+        #expensePieChart {
+            width: 400px !important; /* Adjust the size of the pie chart */
+            height: 400px !important;
+            display: inline-block;
+        }
+
+        .btn {
+            background-color: #008080;
+            padding: 10px 20px;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #00a3a3;
+        }
+
     </style>
 </head>
 <body>
 
-    <h1>Saved Expenses</h1>
+<div class="container">
+    <h1>Expense List</h1>
 
+    <!-- Expense Table -->
     <table>
         <thead>
             <tr>
@@ -59,65 +118,85 @@
             <tr>
                 <td>{{ expense.get_category_display }}</td>
                 <td>{{ expense.description }}</td>
-                <td>{{ expense.amount }}</td>
+                <td>₹{{ expense.amount }}</td> <!-- Display amounts in Rupees -->
                 <td>{{ expense.date }}</td>
             </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No expenses recorded.</td>
+            </tr>
             {% endfor %}
-            <p>Add more  <a href="{% url 'add_expense' %}">Add</a></p>
-            <p>Home  <a href="{% url 'home' %}">Dashboard</a></p>
         </tbody>
     </table>
 
+    <!-- Summary Section -->
+    <div class="summary">
+        <div>Total Expenses: ₹<span id="totalExpenses">{{ total_expenses }}</span></div>
+        <div>Monthly Budget: ₹<span id="monthlyBudget">{{ monthly_budget }}</span></div>
+        <div>Remaining: ₹<span id="remainingAmount">{{ remaining_budget }}</span></div>
+    </div>
+
     <!-- Pie Chart Section -->
-    <div class="chart-container">
+    <div class="pie-chart">
+        <h2>Expenses Breakdown</h2>
         <canvas id="expensePieChart"></canvas>
     </div>
 
-    <script>
-        const ctx = document.getElementById('expensePieChart').getContext('2d');
+    <!-- Back Button -->
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="{% url 'dashboard' %}" class="btn">Back to Dashboard</a>
+    </div>
+</div>
 
-        // Data preparation for the pie chart
-        const categories = {{ categories|safe }};
-        const totals = {{ totals|safe }};
-
-        const data = {
+<!-- JavaScript for Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Data from Django passed to JavaScript safely
+    const categories = {{ categories|safe }};
+    const totals = {{ totals|safe }};
+    
+    // Chart.js to render Pie Chart
+    const ctx = document.getElementById('expensePieChart').getContext('2d');
+    const expensePieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
             labels: categories,
             datasets: [{
-                label: 'Total Expenses by Category',
                 data: totals,
                 backgroundColor: [
-                    '#ff4c4c',
-                    '#ff8c4c',
-                    '#ffcf4c',
-                    '#4cff4c',
-                    '#4c8cff',
-                    '#cf4cff',
+                    '#008080', '#00a3a3', '#004c4c', '#002e2e', '#005555'
                 ],
-                borderColor: '#000',
-                borderWidth: 2,
-                hoverOffset: 10 // Lift effect on hover
+                borderColor: '#fff',
+                borderWidth: 2
             }]
-        };
-
-        const config = {
-            type: 'pie',
-            data: data,
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Expense Distribution by Category'
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: '#fff'
                     }
+                },
+                tooltip: {
+                    backgroundColor: '#002e2e',
+                    titleColor: '#fff',
+                    bodyColor: '#fff'
                 }
-            },
-        };
+            }
+        }
+    });
 
-        const expensePieChart = new Chart(ctx, config);
-    </script>
-   
+    // Remaining budget calculation
+    const totalExpenses = parseFloat(document.getElementById('totalExpenses').innerText);
+    const monthlyBudget = parseFloat(document.getElementById('monthlyBudget').innerText);
+    let remainingAmount = monthlyBudget - totalExpenses;
+    if (remainingAmount < 0) {
+        remainingAmount = 0;
+    }
+    document.getElementById('remainingAmount').innerText = remainingAmount.toFixed(2);
+</script>
+
 </body>
 </html>

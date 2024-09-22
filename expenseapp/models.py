@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
@@ -9,7 +10,7 @@ class Expense(models.Model):
         ('BILLS', 'Bills'),
         ('OTHER', 'Other'),
     ]
-    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     description = models.TextField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -53,14 +54,15 @@ class OtherExpense(models.Model):
     
     def __str__(self):
         return f"Other: {self.description} - {self.amount}"
-
-# expenseapp/models.py
+    
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    monthly_budget = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+class MonthlyBudget(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    budget_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    month = models.DateField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.user.username}'s Profile"
+        return f"{self.user.username} - {self.month.strftime('%B %Y')} Budget: {self.budget_amount}"

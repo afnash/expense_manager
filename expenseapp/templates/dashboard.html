@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #111; /* Black background */
+            color: #fff; /* White text */
+            padding: 20px;
+            margin: 0;
+        }
+
+        .dashboard {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #222; /* Darker gray background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); /* Red shadow */
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff3b3b; /* Bright red for the title */
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .notification {
+            background-color: #ff3b3b; /* Bright red */
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        a {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            background-color: #ff3b3b; /* Bright red buttons */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease; /* Smooth transition */
+        }
+
+        a:hover {
+            background-color: #ff7f7f; /* Lighter red on hover */
+            transform: scale(1.05); /* Slight zoom on hover */
+        }
+
+        .details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .details div {
+            flex: 1;
+            margin: 0 10px;
+            padding: 15px;
+            background-color: #333; /* Dark gray for boxes */
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .details div h2 {
+            color: #ff3b3b; /* Bright red for headings */
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>Dashboard</h1>
+
+        <!-- Display notification if budget is exceeded -->
+        {% if budget_exceeded %}
+        <div class="notification">
+            You have exceeded your monthly budget!
+        </div>
+        {% endif %}
+
+        <div class="details">
+            <div>
+                <h2>Total Expenses</h2>
+                <p>{{ total_expenses }}</p>
+            </div>
+            <div>
+                <h2>Monthly Budget</h2>
+                <p>{{ monthly_budget.budget_amount }}</p>
+            </div>
+            <div>
+                <h2>Remaining Budget</h2>
+                <p>{{ remaining_budget }}</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{% url 'add_expense' %}">Add Expense</a>
+            <a href="{% url 'expense_list' %}">View Expenses</a>
+            <a href="{% url 'set_monthly_budget' %}">Set Monthly Budget</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+    </div>
+</body>
+</html>
